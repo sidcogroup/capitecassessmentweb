@@ -135,7 +135,7 @@ function DisputeFlow({
         <dd>{tx.reference ?? '—'}</dd>
         <dt>Amount</dt>
         <dd>
-          <Money amount={tx.amount} currency={currency} />
+          <Money amount={tx.amount} currency={currency} direction="debit" />
         </dd>
         <dt>Account</dt>
         <dd>{accountNumber}</dd>

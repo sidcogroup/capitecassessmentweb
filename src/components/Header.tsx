@@ -1,4 +1,5 @@
 import { Link, NavLink } from 'react-router-dom'
+import { useProfile } from '../api/queries'
 import { useAuth } from '../auth/AuthContext'
 import { Logo } from './Logo'
 
@@ -23,7 +24,8 @@ export function PublicHeader() {
 }
 
 export function AppHeader() {
-  const { session, signOut } = useAuth()
+  const { signOut } = useAuth()
+  const clientName = useProfile().data?.fullName
   return (
     <header className="site-header">
       <div className="site-header__inner">
@@ -36,9 +38,9 @@ export function AppHeader() {
           </NavLink>
           <NavLink to="/disputes">My disputes</NavLink>
           <a href={`tel:${SUPPORT_NUMBER.replaceAll(' ', '')}`}>{SUPPORT_NUMBER}</a>
-          {session?.username && (
+          {clientName && (
             <span className="site-header__user" aria-label="Signed in as">
-              {session.username}
+              {clientName}
             </span>
           )}
           <button type="button" className="btn btn--link" onClick={() => void signOut('user')}>

@@ -1,12 +1,23 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { accountsApi, type TransactionQuery } from './accounts'
+import { profileApi } from './profile'
 import { disputesApi, type CreateDisputeRequest, type TransactionSnapshot } from './disputes'
 
 export const queryKeys = {
+  profile: ['profile'] as const,
   accounts: ['accounts'] as const,
   transactions: (accountNumber: string, q: TransactionQuery) =>
     ['accounts', accountNumber, 'transactions', q] as const,
   disputes: ['disputes'] as const,
+}
+
+/** Shared (cached) profile; fetched in parallel with accounts on first app render. */
+export function useProfile() {
+  return useQuery({
+    queryKey: queryKeys.profile,
+    queryFn: ({ signal }) => profileApi.get(signal),
+    staleTime: 5 * 60_000,
+  })
 }
 
 export function useAccounts() {

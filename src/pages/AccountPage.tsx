@@ -191,7 +191,8 @@ function TransactionRow({
   dispute?: Dispute
 }) {
   const openDispute = dispute && OPEN_STATUSES.includes(dispute.status)
-  const canDispute = isDebit(tx) && !openDispute
+  const debit = isDebit(tx)
+  const canDispute = debit && !openDispute
 
   return (
     <tr>
@@ -204,7 +205,7 @@ function TransactionRow({
       </td>
       <td className="muted">{tx.reference ?? '—'}</td>
       <td className="num col-shade">
-        <Money amount={tx.amount} currency={currency} />
+        <Money amount={tx.amount} currency={currency} direction={debit ? 'debit' : 'credit'} />
       </td>
       <td className="cell-action">
         {dispute && (

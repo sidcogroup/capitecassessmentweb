@@ -575,6 +575,10 @@ fieldset {
 .money--negative {
   color: var(--color-error);
 }
+.money--credit {
+  color: var(--color-success);
+  font-weight: 600;
+}
 
 .i-want-to h2 {
   font-size: 26px;

@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useAccounts, useDisputes } from '../api/queries'
+import { useAccounts, useDisputes, useProfile } from '../api/queries'
 import { OPEN_STATUSES } from '../api/disputes'
-import { useAuth } from '../auth/AuthContext'
 import { EmptyState, ErrorState, PageLoader } from '../components/Feedback'
 import { Money } from '../components/Money'
 import { formatLongDate } from '../lib/format'
 
 export function PortfolioPage() {
-  const { session } = useAuth()
+  const profile = useProfile()
   const [today] = useState(() => new Date())
   const accounts = useAccounts()
   const disputes = useDisputes()
@@ -19,7 +18,7 @@ export function PortfolioPage() {
       <h1 className="page-title">my banking portfolio</h1>
       <dl className="client-meta">
         <dt>Client name:</dt>
-        <dd>{session?.username ?? '—'}</dd>
+        <dd>{profile.data?.fullName ?? '—'}</dd>
         <dt>Today&apos;s date:</dt>
         <dd>{formatLongDate(today)}</dd>
       </dl>
