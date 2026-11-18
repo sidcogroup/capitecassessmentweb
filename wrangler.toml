@@ -1,0 +1,6 @@
+name = "capitecassessmentweb"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "dist"
+
+[vars]
+API_PROXY_TARGET = "https://capitecassessment-api.lemonbush-17bdcca3.southafricanorth.azurecontainerapps.io"
