@@ -35,13 +35,14 @@ const longDateFmt = new Intl.DateTimeFormat('en-ZA', {
   year: 'numeric',
 })
 
-function safe(value: string | Date, fmt: Intl.DateTimeFormat): string {
+function safe(value: string | Date | null | undefined, fmt: Intl.DateTimeFormat): string {
+  if (value == null) return '—'
   const d = typeof value === 'string' ? new Date(value) : value
   return Number.isNaN(d.getTime()) ? '—' : fmt.format(d)
 }
 
-export const formatDate = (v: string | Date) => safe(v, dateFmt)
-export const formatDateTime = (v: string | Date) => safe(v, dateTimeFmt)
+export const formatDate = (v: string | Date | null | undefined) => safe(v, dateFmt)
+export const formatDateTime = (v: string | Date | null | undefined) => safe(v, dateTimeFmt)
 export const formatLongDate = (v: string | Date) => safe(v, longDateFmt)
 
 /** Shows only the last 4 digits, e.g. ******0101 */

@@ -1,7 +1,12 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { accountsApi, type TransactionQuery } from './accounts'
 import { profileApi } from './profile'
-import { disputesApi, type CreateDisputeRequest, type TransactionSnapshot } from './disputes'
+import {
+  disputesApi,
+  type CreateDisputeRequest,
+  type DisputeQuery,
+  type TransactionSnapshot,
+} from './disputes'
 
 export const queryKeys = {
   profile: ['profile'] as const,
@@ -9,6 +14,8 @@ export const queryKeys = {
   transactions: (accountNumber: string, q: TransactionQuery) =>
     ['accounts', accountNumber, 'transactions', q] as const,
   disputes: ['disputes'] as const,
+  disputeHistory: (disputeReference: string) =>
+    ['disputes', disputeReference, 'history'] as const,
 }
 
 /** Shared (cached) profile; fetched in parallel with accounts on first app render. */
@@ -29,7 +36,10 @@ export function useAccounts() {
 
 export function useAccount(accountNumber: string) {
   const query = useAccounts()
-  return { ...query, account: query.data?.find((a) => a.accountNumber === accountNumber) }
+  return {
+    ...query,
+    account: query.data?.find((a) => a.accountNumber === accountNumber),
+  }
 }
 
 export function useTransactions(accountNumber: string, q: TransactionQuery) {
@@ -44,6 +54,23 @@ export function useDisputes() {
   return useQuery({
     queryKey: queryKeys.disputes,
     queryFn: ({ signal }) => disputesApi.list(signal),
+  })
+}
+
+export function useDisputesPage(q: DisputeQuery) {
+  return useQuery({
+    queryKey: [...queryKeys.disputes, 'page', q] as const,
+    queryFn: ({ signal }) => disputesApi.listPage(q, signal),
+    placeholderData: keepPreviousData,
+  })
+}
+
+/** Lazily fetched: pass `enabled=false` until the user opens the history. */
+export function useDisputeHistory(disputeReference: string, enabled: boolean) {
+  return useQuery({
+    queryKey: queryKeys.disputeHistory(disputeReference),
+    queryFn: ({ signal }) => disputesApi.history(disputeReference, signal),
+    enabled,
   })
 }
 
