@@ -1,5 +1,18 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  keepPreviousData,
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { accountsApi, type TransactionQuery } from './accounts'
+import {
+  buildAccountDirectory,
+  clientDisputeSummary,
+  consultantApi,
+  type PageQuery,
+  type UpdateDisputeBody,
+} from './consultant'
 import { profileApi } from './profile'
 import {
   disputesApi,
@@ -83,5 +96,87 @@ export function useCreateDispute() {
       idempotencyKey: string
     }) => disputesApi.create(vars.input, vars.snapshot, vars.idempotencyKey),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.disputes }),
+  })
+}
+
+// ---------------------------------------------------------------- consultant
+
+export const consultantKeys = {
+  all: ['consultant'] as const,
+  clients: (q: PageQuery) => ['consultant', 'clients', q] as const,
+  client: (userId: string) => ['consultant', 'client', userId] as const,
+  clientAccounts: (userId: string) => ['consultant', 'client', userId, 'accounts'] as const,
+  accountTransactions: (accountId: string, q: PageQuery) =>
+    ['consultant', 'account', accountId, 'transactions', q] as const,
+  disputes: ['consultant', 'disputes'] as const,
+  directory: ['consultant', 'directory'] as const,
+}
+
+export function useConsultantClients(q: PageQuery) {
+  return useQuery({
+    queryKey: consultantKeys.clients(q),
+    queryFn: ({ signal }) => consultantApi.clients(q, signal),
+    placeholderData: keepPreviousData,
+  })
+}
+
+export function useConsultantClient(userId: string) {
+  return useQuery({
+    queryKey: consultantKeys.client(userId),
+    queryFn: ({ signal }) => consultantApi.client(userId, signal),
+  })
+}
+
+export function useConsultantClientAccounts(userId: string) {
+  return useQuery({
+    queryKey: consultantKeys.clientAccounts(userId),
+    queryFn: ({ signal }) => consultantApi.clientAccounts(userId, signal),
+  })
+}
+
+export function useConsultantTransactions(accountId: string, q: PageQuery) {
+  return useQuery({
+    queryKey: consultantKeys.accountTransactions(accountId, q),
+    queryFn: ({ signal }) => consultantApi.accountTransactions(accountId, q, signal),
+    placeholderData: keepPreviousData,
+  })
+}
+
+/** Pass `userId` to scope to one client; omit it for every client's disputes. */
+export function useConsultantDisputes(q: PageQuery, userId?: string) {
+  return useQuery({
+    queryKey: [...consultantKeys.disputes, userId ?? 'all', q] as const,
+    queryFn: ({ signal }) =>
+      userId ? consultantApi.clientDisputes(userId, q, signal) : consultantApi.disputes(q, signal),
+    placeholderData: keepPreviousData,
+  })
+}
+
+export function useUpdateDispute() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (vars: { reference: string; body: UpdateDisputeBody }) =>
+      consultantApi.updateDispute(vars.reference, vars.body),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: consultantKeys.disputes }),
+  })
+}
+
+/** accountNumber -> owning client and accountId, for linking disputes back to clients. */
+export function useAccountDirectory() {
+  return useQuery({
+    queryKey: consultantKeys.directory,
+    queryFn: ({ signal }) => buildAccountDirectory(signal),
+    staleTime: 5 * 60_000,
+  })
+}
+
+/** Dispute counts for each listed client; keyed under disputes so updates refresh them. */
+export function useClientDisputeSummaries(userIds: number[]) {
+  return useQueries({
+    queries: userIds.map((id) => ({
+      queryKey: [...consultantKeys.disputes, String(id), 'summary'] as const,
+      queryFn: ({ signal }: { signal: AbortSignal }) => clientDisputeSummary(String(id), signal),
+    })),
+    combine: (results) => new Map(userIds.map((id, i) => [id, results[i]?.data] as const)),
   })
 }

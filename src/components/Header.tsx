@@ -51,3 +51,31 @@ export function AppHeader() {
     </header>
   )
 }
+
+export function ConsultantHeader() {
+  const { signOut, session } = useAuth()
+  return (
+    <header className="consultant-header">
+      <div className="consultant-header__top">
+        <Link to="/consultant" className="site-header__brand consultant-header__brand">
+          <Logo />
+          <span className="consultant-header__tag">Consultant</span>
+        </Link>
+        <div className="consultant-header__user">
+          {session?.username && <span aria-label="Signed in as">{session.username}</span>}
+          <button type="button" className="btn btn--link" onClick={() => void signOut('user')}>
+            Log out
+          </button>
+        </div>
+      </div>
+      <nav className="consultant-header__nav" aria-label="Main">
+        <div className="consultant-header__tabs">
+          <NavLink to="/consultant" end>
+            Clients
+          </NavLink>
+          <NavLink to="/consultant/disputes">Disputes</NavLink>
+        </div>
+      </nav>
+    </header>
+  )
+}

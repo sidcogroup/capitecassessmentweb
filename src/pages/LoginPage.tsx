@@ -7,13 +7,26 @@ import { authApi } from '../api/auth'
 import { Alert } from '../components/Feedback'
 import { SecurityBasics } from '../components/SecurityBasics'
 import { useAuth, type SignOutReason } from '../auth/AuthContext'
+import { isClientIdentifier } from '../lib/format'
 import { AuthShell } from './AuthShell'
 
 const schema = z.object({
   accountNumber: z
     .string()
     .trim()
-    .regex(/^[0-9]{10}$/, 'Enter your 10-digit account number'),
+    .min(1, 'Enter your account number or username')
+    .superRefine((value, ctx) => {
+      if (isClientIdentifier(value)) {
+        if (!/^[0-9]{10}$/.test(value)) {
+          ctx.addIssue({ code: 'custom', message: 'Enter your 10-digit account number' })
+        }
+      } else if (!/^[A-Za-z0-9]{3,32}$/.test(value)) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Username can only contain letters and numbers',
+        })
+      }
+    }),
 })
 type FormValues = z.infer<typeof schema>
 
@@ -67,9 +80,8 @@ export function LoginPage() {
             <input
               id="accountNumber"
               type="text"
-              inputMode="numeric"
               autoComplete="username"
-              maxLength={10}
+              maxLength={32}
               spellCheck={false}
               aria-invalid={errors.accountNumber ? 'true' : 'false'}
               aria-describedby={errors.accountNumber ? 'accountNumber-error' : undefined}

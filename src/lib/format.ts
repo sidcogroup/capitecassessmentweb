@@ -46,6 +46,9 @@ export const formatDateTime = (v: string | Date | null | undefined) => safe(v, d
 export const formatLongDate = (v: string | Date) => safe(v, longDateFmt)
 
 /** Shows only the last 4 digits, e.g. ******0101 */
+/** Purely numeric identifiers are clients (account numbers); alphanumeric ones are consultant usernames. */
+export const isClientIdentifier = (value: string) => /^[0-9]+$/.test(value)
+
 export function maskAccountNumber(accountNumber: string): string {
   if (accountNumber.length <= 4) return accountNumber
   return `${'*'.repeat(accountNumber.length - 4)}${accountNumber.slice(-4)}`
