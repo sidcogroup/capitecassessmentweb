@@ -59,6 +59,33 @@ describe('two-step login', () => {
     })
   })
 
+  it('accepts an alphanumeric consultant username and shows it unmasked on the OTP step', async () => {
+    const user = userEvent.setup()
+    const fetchMock = mockApi({
+      'GET /api/v1/authenticate/me': () => ({ status: 401 }),
+      'POST /api/v2/authenticate/request-otp': () => ({ status: 200, body: { message: null } }),
+    })
+
+    renderApp('/login')
+
+    const input = await screen.findByLabelText(/account number\/username/i)
+
+    await user.type(input, 'consult!')
+    await user.click(screen.getByRole('button', { name: /continue/i }))
+    expect(await screen.findByText(/letters and numbers/i)).toBeInTheDocument()
+
+    await user.clear(input)
+    await user.type(input, 'consultant1')
+    await user.click(screen.getByRole('button', { name: /continue/i }))
+
+    await screen.findByLabelText(/one-time pin/i)
+    expect(screen.getByText('Username:')).toBeInTheDocument()
+    expect(screen.getByText('consultant1')).toBeInTheDocument()
+
+    const otpCall = fetchMock.mock.calls.findLast(([url]) => String(url).includes('request-otp'))
+    expect(JSON.parse(String(otpCall?.[1]?.body))).toEqual({ identifier: 'consultant1' })
+  })
+
   it('sends the user back to login when the session expires', async () => {
     mockApi({
       'GET /api/v1/authenticate/me': () => ({ status: 200, body: session }),

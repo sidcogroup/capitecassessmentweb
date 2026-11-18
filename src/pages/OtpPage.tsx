@@ -9,7 +9,7 @@ import { ApiError } from '../api/http'
 import { useAuth } from '../auth/AuthContext'
 import { Alert } from '../components/Feedback'
 import { SecurityBasics } from '../components/SecurityBasics'
-import { maskAccountNumber } from '../lib/format'
+import { isClientIdentifier, maskAccountNumber } from '../lib/format'
 import { AuthShell } from './AuthShell'
 import type { OtpRouteState } from './LoginPage'
 
@@ -114,9 +114,11 @@ function OtpForm({ accountNumber, message, from }: OtpRouteState) {
 
       <form className="login-form" onSubmit={onSubmit} noValidate>
         <div className="form-row">
-          <span className="form-row__label">Account number:</span>
+          <span className="form-row__label">
+            {isClientIdentifier(accountNumber) ? 'Account number:' : 'Username:'}
+          </span>
           <span className="form-row__control form-row__value">
-            {maskAccountNumber(accountNumber)}
+            {isClientIdentifier(accountNumber) ? maskAccountNumber(accountNumber) : accountNumber}
           </span>
         </div>
         <div className="form-row">

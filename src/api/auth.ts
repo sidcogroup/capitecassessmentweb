@@ -1,3 +1,4 @@
+import { isClientIdentifier } from '../lib/format'
 import { request } from './http'
 
 export interface RequestOtpResponse {
@@ -11,10 +12,11 @@ export interface Session {
 }
 
 export const authApi = {
-  requestOtp(accountNumber: string) {
+  /** `identifier` is what the user typed: a client account number or a consultant username. */
+  requestOtp(identifier: string) {
     return request<RequestOtpResponse>('/api/v2/authenticate/request-otp', {
       method: 'POST',
-      body: { accountNumber },
+      body: isClientIdentifier(identifier) ? { identifier, accountNumber: identifier } : { identifier },
       skipUnauthorizedHandler: true,
     })
   },
