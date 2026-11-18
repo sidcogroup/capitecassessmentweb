@@ -8,5 +8,6 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     css: false,
+    env: { VITE_DISPUTES_API: 'mock' },
   },
 })
