@@ -54,7 +54,7 @@ function messageFor(status: number, problem?: ProblemDetails): string {
   // Prefer server validation detail only for client errors; never surface 5xx internals.
   if (status >= 400 && status < 500 && status !== 401) {
     const firstFieldError = problem?.errors && Object.values(problem.errors).flat()[0]
-    const serverMessage = problem?.detail || firstFieldError
+    const serverMessage = problem?.detail || firstFieldError || problem?.title
     if (serverMessage) return serverMessage
   }
   return FRIENDLY_MESSAGES[status] ?? 'Something went wrong on our side. Please try again later.'
