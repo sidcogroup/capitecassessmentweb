@@ -5,7 +5,7 @@
 
 A web application that lets bank customers **view their transactions and dispute them**, and lets bank consultants **review and resolve those disputes**. A historic view of every disputed transaction, with its full status timeline, is available to both sides.
 
-**Live version:** <https://capitecassessmentweb.pages.dev>
+**Live version:** <https://capitecassessmentweb.pages.dev> (Allow for a +-20 sec container cold start)
 
 ---
 
