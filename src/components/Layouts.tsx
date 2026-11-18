@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import { Outlet } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { useIdleTimeout } from '../auth/useIdleTimeout'
-import { AppHeader, PublicHeader } from './Header'
+import { AppHeader, ConsultantHeader, PublicHeader } from './Header'
 
 const IDLE_TIMEOUT_MS = 5 * 60 * 1000
 const IDLE_WARNING_MS = 60 * 1000
@@ -33,7 +33,8 @@ export function PublicLayout() {
   )
 }
 
-export function AppLayout() {
+/** Signs the user out after inactivity, with a one-minute warning dialog. */
+function IdleSessionGuard() {
   const { signOut, refreshSession } = useAuth()
   const onTimeout = useCallback(() => void signOut('idle'), [signOut])
   const { warningVisible, secondsLeft, reset } = useIdleTimeout({
@@ -46,6 +47,17 @@ export function AppLayout() {
     if (await refreshSession()) reset()
   }
 
+  if (!warningVisible) return null
+  return (
+    <SessionTimeoutDialog
+      secondsLeft={secondsLeft}
+      onStay={staySignedIn}
+      onSignOut={() => void signOut('user')}
+    />
+  )
+}
+
+export function AppLayout() {
   return (
     <div className="app-shell">
       <a href="#main" className="skip-link">
@@ -60,13 +72,23 @@ export function AppLayout() {
         <Outlet />
       </main>
       <Footer />
-      {warningVisible && (
-        <SessionTimeoutDialog
-          secondsLeft={secondsLeft}
-          onStay={staySignedIn}
-          onSignOut={() => void signOut('user')}
-        />
-      )}
+      <IdleSessionGuard />
+    </div>
+  )
+}
+
+export function ConsultantLayout() {
+  return (
+    <div className="app-shell consultant">
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
+      <ConsultantHeader />
+      <main id="main" className="page page--wide">
+        <Outlet />
+      </main>
+      <Footer />
+      <IdleSessionGuard />
     </div>
   )
 }

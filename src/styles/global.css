@@ -784,3 +784,150 @@ fieldset {
   display: grid;
   gap: 0.5rem;
 }
+
+/* ---------------------------------------------------------------- consultant workspace */
+.consultant {
+  --consultant-accent: var(--color-navy);
+}
+.page--wide {
+  max-width: 1180px;
+}
+
+.consultant-header {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+.consultant-header__top,
+.consultant-header__tabs {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.consultant-header__top {
+  padding-block: 14px;
+  gap: 12px 24px;
+  justify-content: space-between;
+}
+.consultant-header__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.consultant-header__tag {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--consultant-accent);
+  border-radius: var(--radius);
+  padding: 4px 10px;
+}
+.consultant-header__user {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  color: var(--color-muted);
+}
+.consultant-header__nav {
+  background: var(--consultant-accent);
+}
+.consultant-header__tabs {
+  gap: 4px;
+}
+.consultant-header__tabs a {
+  color: rgba(255, 255, 255, 0.78);
+  padding: 12px 16px;
+  border-bottom: 3px solid transparent;
+}
+.consultant-header__tabs a:hover {
+  color: #fff;
+  text-decoration: none;
+}
+.consultant-header__tabs a.active {
+  color: #fff;
+  border-bottom-color: var(--color-red);
+  font-weight: 600;
+}
+
+.consultant .page-title {
+  color: var(--consultant-accent);
+  font-weight: 400;
+  font-size: clamp(28px, 4.5vw, 40px);
+}
+.consultant section {
+  margin-top: 32px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.section-head h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--color-text-strong);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 4px solid var(--consultant-accent);
+}
+.stat--link {
+  color: inherit;
+}
+.stat--link:hover {
+  text-decoration: none;
+  border-color: var(--color-primary);
+}
+.stat__label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+}
+.stat__value {
+  font-size: 32px;
+  font-weight: 300;
+  color: var(--color-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+.stat__hint {
+  font-size: 13px;
+  color: var(--color-primary);
+}
+
+.profile-card .review-list {
+  grid-template-columns: max-content 1fr max-content 1fr;
+}
+
+.dialog--wide {
+  max-width: min(560px, calc(100vw - 32px));
+  width: 100%;
+}
+.dialog--wide .review-list {
+  margin-bottom: 18px;
+}
+
+@media (max-width: 820px) {
+  .profile-card .review-list {
+    grid-template-columns: max-content 1fr;
+  }
+}
+
+.table tr.row--flagged td:first-child {
+  box-shadow: inset 4px 0 0 var(--color-warning);
+}

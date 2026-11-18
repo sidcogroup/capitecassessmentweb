@@ -9,7 +9,7 @@ describe('two-step login', () => {
     let loggedIn = false
     const fetchMock = mockApi({
       'GET /api/v1/authenticate/me': () => (loggedIn ? { status: 200, body: session } : { status: 401 }),
-      'POST /api/v2/authenticate/request-otp': () => ({
+      'POST /api/v2/authenticate/authenticate': () => ({
         status: 200,
         body: { message: 'If the account number is registered, a one-time pin has been sent.' },
       }),
@@ -63,7 +63,7 @@ describe('two-step login', () => {
     const user = userEvent.setup()
     const fetchMock = mockApi({
       'GET /api/v1/authenticate/me': () => ({ status: 401 }),
-      'POST /api/v2/authenticate/request-otp': () => ({ status: 200, body: { message: null } }),
+      'POST /api/v2/authenticate/authenticate': () => ({ status: 200, body: { message: null } }),
     })
 
     renderApp('/login')
@@ -82,7 +82,7 @@ describe('two-step login', () => {
     expect(screen.getByText('Username:')).toBeInTheDocument()
     expect(screen.getByText('consultant1')).toBeInTheDocument()
 
-    const otpCall = fetchMock.mock.calls.findLast(([url]) => String(url).includes('request-otp'))
+    const otpCall = fetchMock.mock.calls.findLast(([url]) => String(url).includes('authenticate'))
     expect(JSON.parse(String(otpCall?.[1]?.body))).toEqual({ identifier: 'consultant1' })
   })
 

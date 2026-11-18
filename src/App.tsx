@@ -2,8 +2,12 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
-import { RedirectIfAuthenticated, RequireAuth } from './auth/RequireAuth'
-import { AppLayout, PublicLayout } from './components/Layouts'
+import { RedirectIfAuthenticated, RequireAuth, RequireRole } from './auth/RequireAuth'
+import { AppLayout, ConsultantLayout, PublicLayout } from './components/Layouts'
+import { ConsultantAccountPage } from './pages/consultant/ConsultantAccountPage'
+import { ConsultantClientPage } from './pages/consultant/ConsultantClientPage'
+import { ConsultantDashboardPage } from './pages/consultant/ConsultantDashboardPage'
+import { ConsultantDisputesPage } from './pages/consultant/ConsultantDisputesPage'
 import { AccountPage } from './pages/AccountPage'
 import { DisputePage } from './pages/DisputePage'
 import { DisputesPage } from './pages/DisputesPage'
@@ -23,15 +27,29 @@ export function AppRoutes() {
         </Route>
       </Route>
       <Route element={<RequireAuth />}>
-        <Route element={<AppLayout />}>
-          <Route index element={<PortfolioPage />} />
-          <Route path="/accounts/:accountNumber" element={<AccountPage />} />
-          <Route
-            path="/accounts/:accountNumber/transactions/:transactionId/dispute"
-            element={<DisputePage />}
-          />
-          <Route path="/disputes" element={<DisputesPage />} />
-          <Route path="*" element={<NotFoundPage />} />
+        <Route element={<RequireRole role="consultant" />}>
+          <Route path="/consultant" element={<ConsultantLayout />}>
+            <Route index element={<ConsultantDashboardPage />} />
+            <Route path="clients/:userId" element={<ConsultantClientPage />} />
+            <Route
+              path="clients/:userId/accounts/:accountId"
+              element={<ConsultantAccountPage />}
+            />
+            <Route path="disputes" element={<ConsultantDisputesPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Route>
+        <Route element={<RequireRole role="customer" />}>
+          <Route element={<AppLayout />}>
+            <Route index element={<PortfolioPage />} />
+            <Route path="/accounts/:accountNumber" element={<AccountPage />} />
+            <Route
+              path="/accounts/:accountNumber/transactions/:transactionId/dispute"
+              element={<DisputePage />}
+            />
+            <Route path="/disputes" element={<DisputesPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
         </Route>
       </Route>
     </Routes>

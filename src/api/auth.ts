@@ -14,7 +14,7 @@ export interface Session {
 export const authApi = {
   /** `identifier` is what the user typed: a client account number or a consultant username. */
   requestOtp(identifier: string) {
-    return request<RequestOtpResponse>('/api/v2/authenticate/request-otp', {
+    return request<RequestOtpResponse>('/api/v2/authenticate/authenticate', {
       method: 'POST',
       body: isClientIdentifier(identifier) ? { identifier, accountNumber: identifier } : { identifier },
       skipUnauthorizedHandler: true,

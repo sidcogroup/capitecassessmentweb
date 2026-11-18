@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { authApi } from '../api/auth'
 import { ApiError } from '../api/http'
 import { useAuth } from '../auth/AuthContext'
+import { homePathFor } from '../auth/roles'
 import { Alert } from '../components/Feedback'
 import { SecurityBasics } from '../components/SecurityBasics'
 import { isClientIdentifier, maskAccountNumber } from '../lib/format'
@@ -74,7 +75,8 @@ function OtpForm({ accountNumber, message, from }: OtpRouteState) {
     mutationFn: (code: string) => authApi.verifyOtp(accountNumber, code),
     onSuccess: (session) => {
       completeLogin(session)
-      navigate(from && from !== '/login' ? from : '/', { replace: true })
+      // RequireRole bounces a deep link that belongs to the other role back to this role's home.
+      navigate(from && from !== '/login' ? from : homePathFor(session), { replace: true })
     },
     onError: () => {
       resetField('code')
